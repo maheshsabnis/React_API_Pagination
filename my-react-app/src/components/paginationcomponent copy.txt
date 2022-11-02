@@ -1,0 +1,135 @@
+import React, { Component, useState, useEffect } from 'react';
+import Pagination from '../utilities/pagination';
+import './pagination.css';
+ 
+import HttpService from '../services/httpservice';
+import CustomersEmployeesShippers from '../models/CustomersEmployeesShippers';
+const PaginationComponent=()=>{
+    let [fetchedRecords, setRecords] = useState([]);
+    const recordsSize = [1,5,10,15,20,25,30,35,40,45,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900];
+    const [selectedRecordSizePerPage,setRecSizePerPage] = useState(0);
+    let [headers,setHeaders] = useState([]);
+    const modelInstance=new CustomersEmployeesShippers()
+    let [totalRecordLengthFromServer, setRecordLength] = useState(0);
+    let [paging,setPaging] = useState([]);
+    const serv = new HttpService();
+
+    useEffect(()=>{
+         async function created(){
+            setHeaders(Object.keys(modelInstance));
+            
+            // make to the service and get All records by default
+             fetchedRecords  = await  serv.getData(0,0);
+             setRecords(fetchedRecords.data);
+             setPaging(generatePageNumbers(fetchedRecords.data.length, selectedRecordSizePerPage));
+             setRecordLength(fetchedRecords.data.length);
+        } 
+        created();
+    },[]); 
+
+    const selectPageNumber= async(pg)=>{
+         
+        let pageSize = selectedRecordSizePerPage * parseInt(pg);
+        fetchedRecords = await serv.getData(selectedRecordSizePerPage,pageSize); 
+        setRecords(fetchedRecords.data);
+        pageSize = 0;
+    }
+    const changePageSize= async(pg)=>{
+         
+        setPaging(generatePageNumbers(totalRecordLengthFromServer, pg));
+        
+        fetchedRecords =  await serv.getData(pg,0);
+        setRecords(fetchedRecords.data);
+         
+    }
+
+    const generatePageNumbers=(records,selectedpgSize)=>{
+       
+        let pagination = new Pagination();
+        // create page numbers so that we can show them at the bottom of the table
+        let pages = pagination.pageCount(records,selectedpgSize);
+       
+            let pageNumbers = [];
+            // the pagination generation
+            for (let index = 0; index <= pages; index++) {
+                pageNumbers.push({
+                    pageId:index 
+                    });
+            }    
+            
+            return pageNumbers;
+        }
+
+
+    return (
+        <div className='container'>
+            <h1>Perform The Server-Side Pagination</h1>
+            <div className="container-lg">
+                <label>Select no. of Records Per Page</label>
+                <select className="form-control" 
+                   value={selectedRecordSizePerPage}
+                   onChange={(evt)=>{
+                    setRecSizePerPage(parseInt(evt.target.value)); 
+                    changePageSize(evt.target.value);}}>
+                    {
+                        recordsSize.map((recSize,idx)=>(
+                            <option key={idx}>{recSize}</option>
+                        ))
+                    } 
+                </select>
+            </div>
+            <br/>
+            <div className="overflow-auto">
+                <table className="table table-striped table-bordered table-hover">
+                    <thead className='headers'>
+                        <tr>
+                            {
+                               headers.map((col,idx)=>(
+                                <th key={idx} className="thead-dark">{col}</th>
+                               ))         
+                               
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            fetchedRecords.map((record,idx)=>(
+                                <tr className="table-info"
+                                 key={idx}>
+                                    {
+                                        headers.map((col,idx)=>(
+                                            <td key={idx} className="thead-dark">{record[col]}</td>
+                                         ))         
+                               
+                                    }
+                                </tr>
+                            ))
+                        }
+                      
+                    </tbody>
+                </table>
+            </div>
+            <br/>
+            <div className="divPage">
+                <nav aria-label="navigation">
+                    <ul className="pagination">
+                        {
+                            paging.map((pageNo,idx)=>(
+                                <li className="page-item c@pgIndex"
+                                   key={idx} onClick={()=>selectPageNumber(pageNo.pageId)}>   
+                                     <a className="page-link">{pageNo.pageId}</a>
+                                </li>
+                              
+                            ))
+                          
+                        }
+                       
+                        
+                    </ul>
+                </nav>
+             </div>
+        </div>
+    );
+};
+
+export default PaginationComponent;

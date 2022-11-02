@@ -1,0 +1,46 @@
+-- Select OrderID, Customers.ContactName as CustomerName, Employees.FirstName + ' ' + Employees.LastName as EmployeeName, 
+-- OrderDate, RequiredDate, ShippedDate, Shippers.CompanyName as ShipperName, 
+-- Freight, ShipName, ShipAddress, ShipCity,ShipPostalCode, ShipCountry
+-- from Orders, Customers, Employees, Shippers
+-- where
+-- Customers.CustomerID=Orders.CustomerID and Employees.EmployeeID =Orders.EmployeeID and Shippers.ShipperID=Orders.ShipVia
+
+
+ 
+  Select OrderID, Customers.ContactName as CustomerName, Employees.FirstName + ' ' + Employees.LastName as EmployeeName, 
+OrderDate, RequiredDate, ShippedDate, Shippers.CompanyName as ShipperName, 
+Freight, ShipName, ShipAddress, ShipCity,ShipPostalCode, ShipCountry into CustomersEmployeesShippers
+from Orders, Customers, Employees, Shippers
+where
+Customers.CustomerID=Orders.CustomerID and Employees.EmployeeID =Orders.EmployeeID and Shippers.ShipperID=Orders.ShipVia
+
+select * from sys.tables 
+
+select * from CustomersEmployeesShippers;
+
+
+//[HttpGet("{top}/{skip}")]
+        //public async Task<IActionResult> Get(int? top = 0, int? skip = 0)
+        //{
+        //    List<CustomersEmployeesShipper> records = new List<CustomersEmployeesShipper>();
+        //    if (top == 0 && skip == 0)
+        //    {
+        //        records = await ctx.CustomersEmployeesShippers.ToListAsync();
+        //    }
+
+        //    if (top > 0 && skip == 0)
+        //    {
+        //        records = await ctx.CustomersEmployeesShippers
+        //                                 .Take(Convert.ToInt32(top))
+        //                   .ToListAsync<CustomersEmployeesShipper>();
+        //    }
+        //    if (top > 0 && skip > 0)
+        //    {
+        //        records = await ctx.CustomersEmployeesShippers
+        //                                 .Skip(Convert.ToInt32(skip))
+        //                                 .Take(Convert.ToInt32(top))
+        //                   .ToListAsync<CustomersEmployeesShipper>();
+        //    }
+
+        //    return Ok(records);
+        //}

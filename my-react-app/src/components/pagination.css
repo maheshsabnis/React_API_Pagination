@@ -1,0 +1,14 @@
+.headers {
+    position:sticky;
+    top:0;
+}
+.tableDiv {
+    max-width: 2800px; 
+    max-height: 650px;
+}
+.divPage{
+    overflow-y: auto;
+    overflow-x: auto;
+    max-width:1800px; 
+    max-height: 600px;
+}
